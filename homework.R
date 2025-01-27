@@ -1,7 +1,7 @@
 #PSYC 259 Homework 1 - Data Import
-#For full credit, provide answers for at least 6/8 questions
+#For full credit, provide answers for at least 4/8 questions
 
-#List names of students collaborating with (no more than 2): 
+#List names of students collaborating with (no more than 2): N/A
 
 #GENERAL INFO 
 #data_A contains 12 files of data. 
@@ -18,7 +18,7 @@
 # Load the readr package
 
 # ANSWER
-
+library(readr) #for read_txt
 
 ### QUESTION 2 ----- 
 
@@ -40,13 +40,15 @@
 #     6          slo          slower         TRUE
 # etc..
 
-# A list of column names are provided to use:
+# ANSWER
+fname <- "data_A/6191_1.txt" #Setting up variable to use with "read_" options
 
+# A list of column names are provided to use:
 col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 
-# ANSWER
 
-
+ds1 <- read_delim(file = fname, col_names = col_names, skip = 7)
+print (ds1) #Read in data while skipping first 7 rows
 
 ### QUESTION 3 ----- 
 
@@ -55,7 +57,12 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # Then write the new data to a CSV file in the "data_cleaned" folder
 
 # ANSWER
+ds1$trial_num <- (ds1$trial_num + 100)
+print (ds1) #Adding 100 to each trial number 
 
+dir.create("data_cleaned/data_A", recursive = TRUE, showWarnings = FALSE) #Creating "data_cleaned" folder
+
+write_csv(ds1, file = "data_cleaned/data_A/6191_1.csv") #Writing the combined data to disk (aka cleaned data file)
 
 ### QUESTION 4 ----- 
 
@@ -63,14 +70,17 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # Store it to a variable
 
 # ANSWER
-
+file_list <- list.files("data_A", full.names = TRUE)
+print (file_list) #Storing full file names in "data_A" into a variable
 
 ### QUESTION 5 ----- 
 
 # Read all of the files in data_A into a single tibble called ds
 
 # ANSWER
-
+full_file_names <- list.files('data_A', full.names = TRUE)
+ds <- read_csv(full_file_names, col_names = col_names, skip = 7)
+print(ds) #Reading all files into a single tibble called ds
 
 ### QUESTION 6 -----
 
@@ -83,7 +93,13 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 # (It should work now, but you'll see a warning because of the erroneous data point)
 
 # ANSWER
+full_file_names <- list.files('data_A', full.names = TRUE)
+ds <- read_csv(full_file_names, col_names = col_names, col_types = cols(
+  trial_num = col_integer(), skip = 7))
+print(ds) #Reading all files into a single tibble called ds while specifying "trial_num" is treated as an integer
 
+ds$trial_num <- (ds$trial_num + 100)
+print(ds) #Adding 100 to each trial number 
 
 ### QUESTION 7 -----
 
