@@ -109,7 +109,14 @@ print(ds) #Adding 100 to each trial number
 # Re-import the data so that filename becomes a column
 
 # ANSWER
+file_list <- list.files("data_A", full.names = TRUE, pattern = "\\.txt$") #Reading all files
 
+combined_data <- purrr::map_dfr(
+  file_list,
+  ~ read_tsv(.x, col_types = cols(trial_num = col_integer()), id = "filename")
+) #Importing and capturing filename as a column using the id argument
+
+print(combined_data) #Print table
 
 ### QUESTION 8 -----
 
@@ -118,4 +125,14 @@ print(ds) #Adding 100 to each trial number
 # There are two sheets of data -- import each one into a new tibble
 
 # ANSWER
+install.packages("readxl")
+library(readxl) #Installing package
 
+data_B <- read_excel("data_B/participant_info.xlsx")
+print(data_B) #Importing data
+
+sheet1 <- read_excel("data_B/participant_info.xlsx", sheet = 1)
+print(sheet1) #Importing data of sheet 1
+
+sheet2 <- read_excel("data_B/participant_info.xlsx", sheet = 2)
+print(sheet2) #Importing data of sheet 2
