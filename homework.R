@@ -50,6 +50,12 @@ col_names  <-  c("trial_num","speed_actual","speed_response","correct")
 ds1 <- read_delim(file = fname, col_names = col_names, skip = 7)
 print (ds1) #Read in data while skipping first 7 rows
 
+#MComment: Looks good - note you can also use read_tsv
+
+#Key: 
+ds1 <- read_tsv("data_A/6191_1.txt", skip = 7, col_names = col_names)
+
+
 ### QUESTION 3 ----- 
 
 # For some reason, the trial numbers for this experiment should start at 100
@@ -82,6 +88,8 @@ full_file_names <- list.files('data_A', full.names = TRUE)
 ds <- read_csv(full_file_names, col_names = col_names, skip = 7)
 print(ds) #Reading all files into a single tibble called ds
 
+#MComment: Did this work? Data_A has text files, so I would think you'd need to use read_tsv
+
 ### QUESTION 6 -----
 
 # Try creating the "add 100" to the trial number variable again
@@ -101,6 +109,9 @@ print(ds) #Reading all files into a single tibble called ds while specifying "tr
 ds$trial_num <- (ds$trial_num + 100)
 print(ds) #Adding 100 to each trial number 
 
+#MComment: Another option from the key
+ds <- read_tsv(fnames, skip = 7, col_names = col_names, col_types = "iccl")
+
 ### QUESTION 7 -----
 
 # Now that the column type problem is fixed, take a look at ds
@@ -117,6 +128,23 @@ combined_data <- purrr::map_dfr(
 ) #Importing and capturing filename as a column using the id argument
 
 print(combined_data) #Print table
+
+#MComment: Alternative option from the key
+ds <- read_tsv(fnames, skip = 7, col_names = col_names, col_types = "iccl", id = "filename")
+
+# How to get more useful info out of file name?
+library(tidyr)
+ds <- ds %>% extract(filename, into = c("id","session"), "(\\d{4})_(\\d{1})") 
+#Extract takes a character variable, names of where to put the extracted data,
+# and then a regular expression saying what pattern to look for.
+# each part in parentheses is one variable to extract
+# \\d{4} means 4 digits, \\d{1} means 1 digit
+
+# Or use "separate", which breaks everything by any delimiter (or a custom one)
+# data_A/6191_1.txt will turn into:
+# data   A   6191   1   txt
+# if we only want to keep 6191 and 1, we can put NAs for the rest
+ds <- ds %>% separate(filename, into = c(NA, NA, "id", "session", NA))
 
 ### QUESTION 8 -----
 
@@ -136,3 +164,7 @@ print(sheet1) #Importing data of sheet 1
 
 sheet2 <- read_excel("data_B/participant_info.xlsx", sheet = 2)
 print(sheet2) #Importing data of sheet 2
+
+#MComment: Looks good! For sheet2, it's also good to label the column names
+#Key:
+test_dates <- read_xlsx("data_B/participant_info.xlsx", col_names = c("participant", "test_date"), sheet = 2)
